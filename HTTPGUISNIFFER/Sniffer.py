@@ -1,5 +1,6 @@
 import threading
 import socket
+import utils
 
 class Sniffer(threading.Thread):
     def __init__(self, app):
@@ -23,15 +24,13 @@ class Sniffer(threading.Thread):
                 self.done.clear()
                 packet, _ = self.socket.recvfrom(65535)
 
-                #TODO create packet parser
-                #ip_info = parse_ip_header(packet)
+                ip_info = utils.parse_ip_header(packet)
 
                 if ip_info['protocol'] == socket.IPPROTO_TCP:
                     tcp_payload = packet[ip_info['ihl']:]
                     
-                    #TODO create check for http
-                    #if is_http_packet(tcp_payload):
-                        #self.app.add_packet(packet)
+                if utils.is_http_packet(tcp_payload):
+                    self.app.add_packet(packet)
 
             finally:
                 self.done.set()
