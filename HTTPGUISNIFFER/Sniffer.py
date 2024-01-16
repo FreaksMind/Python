@@ -18,6 +18,15 @@ class Sniffer(threading.Thread):
         self.can_run.set()    
 
     def run(self):
+        """
+        Function to run the thread code
+
+        Args:
+            self (Sniffer): the sniffer object instance to acces the thread
+
+        Returns:
+            None
+        """
         while True:
             self.can_run.wait()
             try:
@@ -28,16 +37,34 @@ class Sniffer(threading.Thread):
 
                 if ip_info['protocol'] == socket.IPPROTO_TCP:
                     tcp_payload = packet[ip_info['ihl']:]
-                    
-                if utils.is_http_packet(tcp_payload):
-                    self.app.add_packet(packet)
+
+                    if utils.is_http_packet(tcp_payload):
+                        self.app.add_packet(packet)
 
             finally:
                 self.done.set()
 
     def pause(self):
+        """
+        Function to pause the sniffer
+
+        Args:
+            self (Sniffer): the sniffer object instance to acces the thread
+
+        Returns:
+            None
+        """
         self.can_run.clear()
         self.done.wait()
 
     def resume(self):
+        """
+        Function to unpause the sniffer
+
+        Args:
+            self (Sniffer): the sniffer object instance to acces the thread
+
+        Returns:
+            None
+        """
         self.can_run.set()
